@@ -4,7 +4,7 @@
 #define __RTTHREAD_CFG_H__
 
 #if defined(__CC_ARM) || defined(__CLANG_ARM)
-#include "RTE_Components.h"
+#include "RTE_Components.h"  // 该头文件cubemx生成时自带，如果手动新建keil工程，则不会有。如果没用到可注释掉或者删掉，不影响rtt使用
 
 #if defined(RTE_USING_FINSH)
 #define RT_USING_FINSH
@@ -104,7 +104,7 @@
 // <h>Memory Management Configuration
 // <c1>Dynamic Heap Management
 //  <i>Dynamic Heap Management
-//#define RT_USING_HEAP
+#define RT_USING_HEAP
 // </c>
 // <c1>using small memory
 //  <i>using small memory

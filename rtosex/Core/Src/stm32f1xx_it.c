@@ -77,6 +77,7 @@ void NMI_Handler(void)
   /* USER CODE END NonMaskableInt_IRQn 1 */
 }
 
+#if 0
 /**
   * @brief This function handles Hard fault interrupt.
   */
@@ -91,7 +92,7 @@ void HardFault_Handler(void)
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
 }
-
+#endif
 /**
   * @brief This function handles Memory management fault.
   */
@@ -163,6 +164,7 @@ void DebugMon_Handler(void)
   /* USER CODE END DebugMonitor_IRQn 1 */
 }
 
+#if 0
 /**
   * @brief This function handles Pendable request for system service.
   */
@@ -189,7 +191,7 @@ void SysTick_Handler(void)
 
   /* USER CODE END SysTick_IRQn 1 */
 }
-
+#endif 
 /******************************************************************************/
 /* STM32F1xx Peripheral Interrupt Handlers                                    */
 /* Add here the Interrupt Handlers for the used peripherals.                  */

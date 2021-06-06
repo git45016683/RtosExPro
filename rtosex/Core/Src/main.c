@@ -112,6 +112,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 	unsigned int testCount = 0;
+	TaskInit();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -122,7 +123,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		printf("testCount: %d", testCount++);
-		HAL_Delay(1000*2);
+		rt_thread_mdelay(1000*2);
   }
   /* USER CODE END 3 */
 }
