@@ -25,7 +25,7 @@ void Task1Thread_entery(void* parameter)
 	while(1)
 	{
 		printf("\r\ntask1TestCount: %d", task1TestCount++);
-		rt_thread_mdelay(1000);
+		rt_thread_mdelay(1000*10);
 	}
 }
 
@@ -59,6 +59,6 @@ void Task2Thread_entery(void* parameter)
 	while(1)
 	{
 		printf("\r\ntask2TestCount: %d", task2TestCount++);
-		rt_thread_mdelay(1000*5);
+		rt_thread_mdelay(1000*50);
 	}
 }
