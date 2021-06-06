@@ -120,7 +120,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		printf("testCount: %d", testCount++);
+//		printf("testCount: %d", testCount++);
+		rt_kprintf("testCount: %d", testCount++);
 		rt_thread_mdelay(1000*2);
   }
   /* USER CODE END 3 */
