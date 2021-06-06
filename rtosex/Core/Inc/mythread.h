@@ -2,8 +2,10 @@
 #define __MYTHREAD_H__
 #include "main.h"
 
-void TaskInit(void);
+void TaskCreate(void);
 void Task1Thread_entery(void* parameter);
 
+void TaskInit(void);
+void Task2Thread_entery(void* parameter);
 
 #endif  // __MYTHREAD_H__

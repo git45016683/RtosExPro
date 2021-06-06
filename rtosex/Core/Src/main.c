@@ -112,6 +112,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 	unsigned int testCount = 0;
+	TaskCreate();
 	TaskInit();
   /* USER CODE END 2 */
 
