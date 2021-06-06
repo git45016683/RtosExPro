@@ -52,6 +52,7 @@ void TaskInit(void)
 		rt_thread_startup(&task2Thread);
 	}
 }
+MSH_CMD_EXPORT(TaskInit, init task2Thread by finsh and output debug information 8s)
 
 void Task2Thread_entery(void* parameter)
 {
@@ -59,6 +60,6 @@ void Task2Thread_entery(void* parameter)
 	while(1)
 	{
 		printf("\r\ntask2TestCount: %d", task2TestCount++);
-		rt_thread_mdelay(1000*50);
+		rt_thread_mdelay(1000*8);
 	}
 }

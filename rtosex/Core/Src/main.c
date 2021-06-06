@@ -110,7 +110,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	unsigned int testCount = 0;
 	TaskCreate();
-	TaskInit();
+//	TaskInit();
   /* USER CODE END 2 */
 
   /* Infinite loop */
