@@ -18,6 +18,7 @@ void TaskCreate(void)
 		rt_thread_startup(task1Thread);
 	}
 }
+INIT_APP_EXPORT(TaskCreate);
 
 void Task1Thread_entery(void* parameter)
 {
