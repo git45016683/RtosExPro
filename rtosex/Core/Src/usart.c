@@ -338,8 +338,11 @@ void rt_hw_console_output(const char *str)
 	}
 }
 
+// 串口DMA接收缓存
 extern uint8_t uart2_recv_buff[RECV_BUFF_MAX];
 uint8_t buff_index = 0;
+// 串口2信号量
+extern rt_sem_t uart2_recv_sem;
 char rt_hw_console_getchar(void)
 {
 	int ch = -1;
@@ -356,16 +359,24 @@ char rt_hw_console_getchar(void)
 		}
 		rt_thread_mdelay(10);
 	}
-#endif
+#else
 	
 	// TODO:此处仅做示例，实际使用需更严谨
 	ch = uart2_recv_buff[buff_index++];
 	if(ch == '\0')
 	{
+		// 释放信号量--收到有效的指令才释放信号量
+		if ((buff_index > 1) && \
+			 (RT_EOK != rt_sem_release(uart2_recv_sem)))
+		{
+			rt_kprintf("\r\nrelease semaphore failed");
+		}
+		
 		memset(uart2_recv_buff,'\0',sizeof(uart2_recv_buff));
 		buff_index = 0;
 		ch = -1;
 	}
+#endif
 	return ch;
 }
 

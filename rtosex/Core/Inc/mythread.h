@@ -8,4 +8,7 @@ void Task1Thread_entery(void* parameter);
 void TaskInit(void);
 void Task2Thread_entery(void* parameter);
 
+void SemExTaskCreate(void);
+void SemExThread_entery(void* parameter);
+
 #endif  // __MYTHREAD_H__
