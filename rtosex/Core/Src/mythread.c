@@ -1,10 +1,20 @@
 #include "mythread.h"
 
+// 声明信号量
+//rt_sem_t uart2_recv_sem;
+
 // 动态创建线程
 static rt_thread_t task1Thread;
 
 void TaskCreate(void)
 {
+//	// 创建信号量
+//	uart2_recv_sem = rt_sem_create("uart2_recv_sem", 0, RT_IPC_FLAG_FIFO);
+//	if (uart2_recv_sem != RT_NULL)
+//	{
+//		rt_kprintf("uart2_recv_sem create success");
+//	}
+//	
 	// 动态创建线程
 	task1Thread = rt_thread_create("Task1Thread_name",  	// 线程名
 																	Task1Thread_entery,   // 线程(回调)入口函数

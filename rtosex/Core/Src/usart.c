@@ -150,6 +150,7 @@ rt_size_t rt_ringbuffer_getchar(struct rt_ringbuffer *rb, rt_uint8_t *ch)
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USART1 init function */
 
@@ -244,8 +245,25 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
     GPIO_InitStruct.Pin = GPIO_PIN_3;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /* USART2 DMA Init */
+    /* USART2_RX Init */
+    hdma_usart2_rx.Instance = DMA1_Channel6;
+    hdma_usart2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_usart2_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_usart2_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_usart2_rx.Init.Mode = DMA_CIRCULAR;
+    hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(&hdma_usart2_rx) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart2_rx);
 
   /* USER CODE BEGIN USART2_MspInit 1 */
 
@@ -290,6 +308,11 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2|GPIO_PIN_3);
 
+    /* USART2 DMA DeInit */
+    HAL_DMA_DeInit(uartHandle->hdmarx);
+
+    /* USART2 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(USART2_IRQn);
   /* USER CODE BEGIN USART2_MspDeInit 1 */
 
   /* USER CODE END USART2_MspDeInit 1 */
@@ -315,10 +338,12 @@ void rt_hw_console_output(const char *str)
 	}
 }
 
+extern uint8_t uart2_recv_buff[RECV_BUFF_MAX];
+uint8_t buff_index = 0;
 char rt_hw_console_getchar(void)
 {
 	int ch = -1;
-	
+#if 0  // 非中断模式可用
 	if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_RXNE) != RESET)
 	{
 		ch = huart2.Instance->DR & 0xff;
@@ -331,7 +356,47 @@ char rt_hw_console_getchar(void)
 		}
 		rt_thread_mdelay(10);
 	}
+#endif
+	
+	// TODO:此处仅做示例，实际使用需更严谨
+	ch = uart2_recv_buff[buff_index++];
+	if(ch == '\0')
+	{
+		memset(uart2_recv_buff,'\0',sizeof(uart2_recv_buff));
+		buff_index = 0;
+		ch = -1;
+	}
 	return ch;
+}
+
+// 串口2空闲中断响应函数
+void UART2_IDLECallback(UART_HandleTypeDef* huart)
+{
+	HAL_UART_DMAStop(&huart2);  // 停止本次DMA传输
+	
+	uint8_t data_len = RECV_BUFF_MAX - __HAL_DMA_GET_COUNTER(&hdma_usart2_rx);  // 计算接收到的数据长度
+	
+	uart2_recv_buff[data_len] = '\0';
+	
+	for(uint8_t i = 0; i < data_len; i++)
+	{
+		rt_kprintf("%c", uart2_recv_buff[i]);
+	}
+	
+	HAL_UART_Receive_DMA(&huart2, (uint8_t*)uart2_recv_buff, sizeof(uart2_recv_buff));  // 重启开始DMA传输 每次255字节数据
+}
+
+// 串口2空闲中断
+void UART2_IDLE_IRQHandler(UART_HandleTypeDef* huart)
+{
+	if (USART2 == huart2.Instance)
+	{
+		if (RESET != __HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE))  // 空闲中断触发
+		{
+			__HAL_UART_CLEAR_IDLEFLAG(&huart2);  // 清空闲中断
+			UART2_IDLECallback(huart);
+		}
+	}
 }
 /* USER CODE END 1 */
 
