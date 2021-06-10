@@ -129,7 +129,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 //		printf("testCount: %d", testCount++);
-		rt_kprintf("testCount: %d", testCount++);
+//		rt_kprintf("testCount: %d", testCount++);
 		rt_thread_mdelay(1000*20);
   }
   /* USER CODE END 3 */

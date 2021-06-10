@@ -8,11 +8,11 @@ void AddThread1_entery(void* parameter);
 void AddThread2_entery(void* parameter);
 
 /*************************************互斥量(锁)的创建/使用示例**********************************************/
-void MutexExTaskCreate(void);												// 动
-void MutexExThread_entery(void* parameter);					// 态
+int SampleWithMutexTaskCreate(void);												// 动态
+int SampleWithMutexTaskInit(void);												// 静态
 
-void MutexExThreadInit(void);												// 静
-void MutexExThread2_entery(void* parameter);				// 态
+void AddThread11_entery(void* parameter);
+void AddThread22_entery(void* parameter);
 /*********************************************************************************************/
 
 #endif  // __MYTHREAD_H__
