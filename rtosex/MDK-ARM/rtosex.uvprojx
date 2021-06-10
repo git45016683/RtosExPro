@@ -431,6 +431,11 @@
               <FileType>1</FileType>
               <FilePath>..\Core\Src\mymutex.c</FilePath>
             </File>
+            <File>
+              <FileName>myevent.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\myevent.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

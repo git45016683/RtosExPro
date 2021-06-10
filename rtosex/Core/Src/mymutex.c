@@ -215,7 +215,7 @@ int SampleWithMutexTaskInit(void)
 	}
 	return 0;
 }
-INIT_APP_EXPORT(SampleWithMutexTaskInit);
+//INIT_APP_EXPORT(SampleWithMutexTaskInit);
 /*************************************互斥量的创建/使用示例**********************************************/
 
 
