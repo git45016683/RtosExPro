@@ -2,7 +2,7 @@
 #define __MYTHREAD_H__
 #include "main.h"
 
-void TaskCreate(void);
+int TaskCreate(void);
 void Task1Thread_entery(void* parameter);
 
 void TaskInit(void);
