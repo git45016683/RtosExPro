@@ -21,7 +21,7 @@ int TaskCreate(void)
 	}
 	return 0;
 }
-INIT_APP_EXPORT(TaskCreate);
+//INIT_APP_EXPORT(TaskCreate);
 
 void Task1Thread_entery(void* parameter)
 {
