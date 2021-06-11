@@ -441,6 +441,11 @@
               <FileType>1</FileType>
               <FilePath>..\Core\Src\mymailbox.c</FilePath>
             </File>
+            <File>
+              <FileName>mymsgqueue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\mymsgqueue.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

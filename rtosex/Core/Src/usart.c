@@ -366,14 +366,14 @@ char rt_hw_console_getchar(void)
 	ch = uart2_recv_buff[buff_index++];
 	if(ch == '\0')
 	{
-		#if 0  // 动态
+		#if 0  // 动态-信号量
 		// 释放信号量--收到有效的指令才释放信号量
 		if ((buff_index > 1) && \
 			 (RT_EOK != rt_sem_release(uart2_recv_sem)))
 		{
 			rt_kprintf("\r\nrelease semaphore failed");
 		}
-		#elif 1  // 静态
+		#elif 1  // 静态-信号量
 		// 释放信号量--收到有效的指令才释放信号量
 		if ((buff_index > 1) && \
 			 (RT_EOK != rt_sem_release(&uart2_recv_sem2)))

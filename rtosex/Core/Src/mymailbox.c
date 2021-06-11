@@ -91,7 +91,7 @@ int sampleMailboxTaskInit(void)
 	}
 	return 0;
 }
-INIT_APP_EXPORT(sampleMailboxTaskInit);
+//INIT_APP_EXPORT(sampleMailboxTaskInit);
 
 
 // 示例线程
@@ -113,7 +113,7 @@ void sendMail_entery(void* parameter)
 {
 	char mail1[] = "wo wang ji le wo shi shui, ";
 	char mail2[] = "ni neng gao su wo ma? ";
-	char mail3[] = "SOS !!! SOS !!! ";
+//	char mail3[] = "SOS !!! SOS !!! ";
 	char mailtemp[32] = "";
 	uint32_t sendCount = 0;
 	char count[8] = "";
@@ -146,7 +146,6 @@ void sendMail_entery(void* parameter)
 void recvMail_entery(void* parameter)
 {
 	char* mail = "";
-	uint32_t count = 0;
 	rt_err_t ret = RT_EOK;
 	while(1)
 	{
