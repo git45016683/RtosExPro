@@ -50,7 +50,7 @@ int DivTaskCreate(void)
 	}
 	return 0;
 }
-INIT_APP_EXPORT(DivTaskCreate);
+//INIT_APP_EXPORT(DivTaskCreate);
 
 //------------------------------------------------------------------------------------
 // 静态创建事件
@@ -112,13 +112,13 @@ int DivTaskInit(void)
 	}
 	return 0;
 }
-//INIT_APP_EXPORT(DivTaskInit);
+INIT_APP_EXPORT(DivTaskInit);
 
 
 // 示例线程
 // 定义事件
-#define EVENT_DIVIDEROK_FLAG12 (1<<12)
-#define EVENT_DIVIDENDOK_FLAG0 (1<<0)
+#define EVENT_DIVIDEROK_FLAG12 (1<<12)  // 12位被定义为除数OK的事件标识位--均可由用户自由定义
+#define EVENT_DIVIDENDOK_FLAG0 (1<<0)   // 0位被定义为被除数OK的事件标识位--均可由用户自由定义
 int divider, dividend = 0;
 // 获取随机数
 int getRandValue(int min, int max)
@@ -133,8 +133,13 @@ void DividerOK_entery(void* parameter)
 	{
 		if ((divider = getRandValue(-20, 20)) > 0)  // 随机除数大于0为准备ok
 		{
+			#if 0  // 动态
 			rt_event_send(div_event_create, EVENT_DIVIDEROK_FLAG12);
-		}
+			#else
+			rt_event_send(&div_event_init, EVENT_DIVIDEROK_FLAG12);
+			#endif
+		} else rt_kprintf("\r\n divider is less than 0---");  // 随机生成的除数小于0，不触发事件发送
+		rt_thread_mdelay(3000);
 	}
 }
 // 被除数，随机生成[-2,2]区间的值，0为不ok
@@ -142,10 +147,15 @@ void DividendOK_entery(void* parameter)
 {
 	while(1)
 	{
-		if ((dividend = getRandValue(-1, 1)) != 0)  // 随机被除数不等于0为准备ok
+		if ((dividend = getRandValue(-2, 2)) != 0)  // 随机被除数不等于0为准备ok
 		{
+			#if 0  // 动态
 			rt_event_send(div_event_create, EVENT_DIVIDENDOK_FLAG0);
-		}
+			#else
+			rt_event_send(&div_event_init, EVENT_DIVIDENDOK_FLAG0);
+			#endif
+		} else rt_kprintf("\r\n dividend is 0!!!!");  // 随机生成的被除数为0，不触发事件发送
+		rt_thread_mdelay(3000);
 	}
 }
 // 除数与被除数都OK，才可以进行除数运算
@@ -155,34 +165,43 @@ void Division_entery(void* parameter)
 	while(1)
 	{
 		unsigned long recvE = 0;
+		rt_bool_t changelinetwice = RT_TRUE;  /*为调试信息输出换行工整一点……无其他意义*/
+		
+		#if 0  // 动态
 		rt_err_t ret = rt_event_recv(div_event_create,												// 事件集名称
+		#else
+		rt_err_t ret = rt_event_recv(&div_event_init,													// 事件集名称
+		#endif
                       (EVENT_DIVIDEROK_FLAG12 | EVENT_DIVIDENDOK_FLAG0),  // 关注的事件
-											 RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR,						// 事件触发类型为OR，并且触发后自动清零
+											 RT_EVENT_FLAG_AND,																	// 事件触发类型为AND
                        1000*2,																						// 超时2S
                        &recvE);																						// 接收到的事件值
 		if (ret == RT_EOK)
 		{
-			if (recvE & EVENT_DIVIDENDOK_FLAG0)
-			{
-				rt_kprintf("\r\nreceived Event Value is %x, dividend=%d", recvE & EVENT_DIVIDENDOK_FLAG0, dividend);
-			}
-			if (recvE & EVENT_DIVIDEROK_FLAG12)
-			{
-				rt_kprintf("\r\nreceived Event Value is %x, divider=%d", recvE & EVENT_DIVIDEROK_FLAG12, divider);
-			}
-		}
+			changelinetwice = RT_FALSE;
+			rt_kprintf("\r\n\r\ndiv operate is %d / %d = %d.%d", \
+			divider, dividend, (divider/dividend), abs(((divider*10)/dividend)%10));  // rt_kprintf不支持浮点数的输出，所以小数点前后的数字分别计算以整型输出
+		} else if (-RT_ETIMEOUT) rt_kprintf("\r\n more than 2s did not receive divider and dividend ok");  // 事件等待超时
+		else rt_kprintf("\r\n something wrong happened when receive divider and dividend");  // 事件等待发生错误
 		
-		ret = rt_event_recv(div_event_create,																	// 事件集名称
+		#if 0  // 动态
+		ret = rt_event_recv(div_event_create,																  // 事件集名称
+		#else
+		ret = rt_event_recv(&div_event_init,																  // 事件集名称
+		#endif
                       (EVENT_DIVIDEROK_FLAG12 | EVENT_DIVIDENDOK_FLAG0),  // 关注的事件
-											 RT_EVENT_FLAG_AND | RT_EVENT_FLAG_CLEAR,						// 事件触发类型为AND，并且触发后自动清零
-                       RT_WAITING_FOREVER,																// 必须等到两者都满足才进行除法运算
+											 RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR,						// 事件触发类型为OR，并且触发后自动清零
+                       RT_WAITING_FOREVER,																// 等到任意事件除法才往下执行
                        &recvE);																						// 接收到的事件值
 		if (ret == RT_EOK)
 		{
-			rt_kprintf("\r\ndiv operate is %d / %d = %f", divider, dividend, (float)(divider/(dividend*1.0)));
+			rt_kprintf("\r\n");
+			if (recvE & EVENT_DIVIDENDOK_FLAG0) rt_kprintf("received Event Value is %x, dividend=%d\r\n", recvE & EVENT_DIVIDENDOK_FLAG0, dividend);
+			if (recvE & EVENT_DIVIDEROK_FLAG12) rt_kprintf("received Event Value is %x, divider=%d\r\n", recvE & EVENT_DIVIDEROK_FLAG12, divider);
+			if (changelinetwice == RT_TRUE) rt_kprintf("\r\n");  /*为调试信息输出换行工整一点……无其他意义*/
 		}
 		
-		rt_thread_mdelay(500);
+		rt_thread_mdelay(100);
 	}
 }
 /*************************************事件的创建/使用示例**********************************************/
