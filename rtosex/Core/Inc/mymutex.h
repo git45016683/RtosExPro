@@ -1,5 +1,5 @@
-#ifndef __MYTHREAD_H__
-#define __MYTHREAD_H__
+#ifndef __MYMUTEX_H__
+#define __MYMUTEX_H__
 #include "main.h"
 
 // 创建两个线程,实现两个变量的递增
@@ -15,4 +15,4 @@ void AddThread11_entery(void* parameter);
 void AddThread22_entery(void* parameter);
 /*********************************************************************************************/
 
-#endif  // __MYTHREAD_H__
+#endif  // __MYMUTEX_H__

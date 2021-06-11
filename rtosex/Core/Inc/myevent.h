@@ -1,5 +1,5 @@
-#ifndef __MYTHREAD_H__
-#define __MYTHREAD_H__
+#ifndef __MYEVENT_H__
+#define __MYEVENT_H__
 #include "main.h"
 
 /*************************************事件的创建/使用示例**********************************************/
@@ -11,4 +11,4 @@ void DividendOK_entery(void* parameter);									// 被除数OK
 void Division_entery(void* parameter);										// 除法运算可以进行
 /*********************************************************************************************/
 
-#endif  // __MYTHREAD_H__
+#endif  // __MYEVENT_H__

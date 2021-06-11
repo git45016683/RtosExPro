@@ -114,7 +114,7 @@ int main(void)
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
-	unsigned int testCount = 0;
+//	unsigned int testCount = 0;
 	__HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);  // 开启串口的空闲中断
 	HAL_UART_Receive_DMA(&huart2, (uint8_t*)uart2_recv_buff, sizeof(uart2_recv_buff));  // 设置DMA传输，将串口2的数据接收到指定的缓存数组，每次255个字节
 //	TaskCreate();

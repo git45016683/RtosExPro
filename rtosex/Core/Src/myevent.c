@@ -112,7 +112,7 @@ int DivTaskInit(void)
 	}
 	return 0;
 }
-INIT_APP_EXPORT(DivTaskInit);
+//INIT_APP_EXPORT(DivTaskInit);
 
 
 // 示例线程
