@@ -6,7 +6,7 @@
 int timerTaskCreate(void);														// 动态
 int timerTaskInit(void);															// 静态
 
-void lifeLogTimerOut(void* parameter);  							// 定时声明周期信息log输出
+void lifeLogTimerOut(void* parameter);  							// 定时生命周期信息log输出
 void testTimerOut(void* parameter);										// 测试定时器函数
 /*********************************************************************************************/
 

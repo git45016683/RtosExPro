@@ -32,7 +32,7 @@ int timerTaskCreate(void)
 	lifeRunXs = 0;
 	return 0;
 }
-INIT_APP_EXPORT(timerTaskCreate);
+//INIT_APP_EXPORT(timerTaskCreate);
 
 //------------------------------------------------------------------------------------
 // 静态-初始化定时器

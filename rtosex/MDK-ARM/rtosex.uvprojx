@@ -335,7 +335,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER,STM32F103xB RTE_USING_FINSH,STM32F103xB</Define>
+              <Define>USE_HAL_DRIVER,STM32F103xB RTE_USING_FINSH,STM32F103xB,RT_USING_MEMPOOL</Define>
               <Undefine></Undefine>
               <IncludePath>../Core/Inc; ../Drivers/STM32F1xx_HAL_Driver/Inc; ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy; ../Drivers/CMSIS/Device/ST/STM32F1xx/Include; ../Drivers/CMSIS/Include; ..\rtos\include; ..\rtos\include\libc; ..\rtos\bsp; ..\rtos\components\finsh</IncludePath>
             </VariousControls>
@@ -450,6 +450,11 @@
               <FileName>mytimer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\Src\mytimer.c</FilePath>
+            </File>
+            <File>
+              <FileName>mymempool.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\mymempool.c</FilePath>
             </File>
           </Files>
         </Group>
