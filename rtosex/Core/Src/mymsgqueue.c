@@ -91,7 +91,7 @@ int msgQueueTaskInit(void)
 	}
 	return 0;
 }
-INIT_APP_EXPORT(msgQueueTaskInit);
+//INIT_APP_EXPORT(msgQueueTaskInit);
 
 
 // 示例线程
