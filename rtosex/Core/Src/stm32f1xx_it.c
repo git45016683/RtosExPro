@@ -136,7 +136,7 @@ void UsageFault_Handler(void)
     /* USER CODE END W1_UsageFault_IRQn 0 */
   }
 }
-
+#if 0
 /**
   * @brief This function handles System service call via SWI instruction.
   */
@@ -149,7 +149,7 @@ void SVC_Handler(void)
 
   /* USER CODE END SVCall_IRQn 1 */
 }
-
+#endif
 /**
   * @brief This function handles Debug monitor.
   */
@@ -162,7 +162,7 @@ void DebugMon_Handler(void)
 
   /* USER CODE END DebugMonitor_IRQn 1 */
 }
-
+#if 0
 /**
   * @brief This function handles Pendable request for system service.
   */
@@ -175,7 +175,7 @@ void PendSV_Handler(void)
 
   /* USER CODE END PendSV_IRQn 1 */
 }
-
+#endif
 /**
   * @brief This function handles System tick timer.
   */
