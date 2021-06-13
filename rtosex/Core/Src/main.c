@@ -19,10 +19,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usart.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
+
+//#include "FreeRTOS.h"
+//#include "task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,8 +44,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef huart1;
-UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
@@ -49,9 +51,6 @@ UART_HandleTypeDef huart2;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_USART1_UART_Init(void);
-static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 #ifdef __GNUC__
 /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
@@ -77,7 +76,38 @@ PUTCHAR_PROTOTYPE
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+TaskHandle_t appTaskCreate_handle = NULL;
+static StackType_t appTaskStack[configMINIMAL_STACK_SIZE];		// app创建task任务栈 大小512
+StaticTask_t appTaskTCB; 																			// app创建task任务控制块指针定义
 
+// 创建线程任务的task
+void AppTasksCreate(void* pvParameters)
+{
+//	taskENTER_CRITICAL();
+	TaskCreate();
+	TaskCreateStatic();
+//	taskEXIT_CRITICAL();
+	
+	vTaskDelete(appTaskCreate_handle);  // 创建完工作任务后，删除该启动任务
+}
+// 空闲任务堆、栈、任务控制块的分配
+static StackType_t IdleTaskStack[configMINIMAL_STACK_SIZE];   // 空闲任务栈 大小为512
+static StaticTask_t IdleTaskTCB;  														// 空闲任务控制块指针定义
+void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize)
+{
+	*ppxIdleTaskTCBBuffer = &IdleTaskTCB;
+	*ppxIdleTaskStackBuffer = IdleTaskStack;
+	*pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+}
+//// 定时器任务堆、栈、任务控制块的分配
+//static StackType_t TimerTaskStack[configMINIMAL_STACK_SIZE];  // 空闲任务栈 大小为256
+//static StaticTask_t TimerTaskTCB;  														// 空闲任务控制块指针定义
+//void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize)
+//{
+//	*ppxTimerTaskTCBBuffer = &TimerTaskTCB;
+//	*ppxTimerTaskStackBuffer = TimerTaskStack;
+//	*pulTimerTaskStackSize = configMINIMAL_STACK_SIZE;
+//}
 /* USER CODE END 0 */
 
 /**
@@ -111,7 +141,17 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-	unsigned int testCount = 0;
+//	unsigned int testCount = 0;
+	appTaskCreate_handle = xTaskCreateStatic((TaskFunction_t)AppTasksCreate,					// 任务入口函数
+																					(char*)					"AppTasksCreate",					// 任务名称
+																					(uint32_t)			configMINIMAL_STACK_SIZE,	// 任务线程栈大小
+																					(void*)					NULL,											// 任务入口函数参数
+																					(UBaseType_t)		tskIDLE_PRIORITY,					// 任务优先级-默认idle优先级
+																					(StackType_t*)	appTaskStack,							// 任务线程栈地址起点
+																					(StaticTask_t*)	&appTaskTCB								// 任务控制块
+																					);
+	if (appTaskCreate_handle != NULL)
+		vTaskStartScheduler();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -121,8 +161,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		printf("testCount: %d", testCount++);
-		HAL_Delay(1000*2);
+//		printf("testCount: %d S", testCount++);
+//		HAL_Delay(1000*2);
   }
   /* USER CODE END 3 */
 }
@@ -163,86 +203,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief USART1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART1_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART1_Init 0 */
-
-  /* USER CODE END USART1_Init 0 */
-
-  /* USER CODE BEGIN USART1_Init 1 */
-
-  /* USER CODE END USART1_Init 1 */
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART1_Init 2 */
-
-  /* USER CODE END USART1_Init 2 */
-
-}
-
-/**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART2_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
-
-}
-
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-
 }
 
 /* USER CODE BEGIN 4 */

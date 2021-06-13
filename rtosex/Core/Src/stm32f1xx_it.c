@@ -58,7 +58,7 @@
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-
+extern void xPortSysTickHandler(void);
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -186,7 +186,7 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+	xPortSysTickHandler();
   /* USER CODE END SysTick_IRQn 1 */
 }
 
