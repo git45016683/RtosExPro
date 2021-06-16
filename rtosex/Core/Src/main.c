@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -68,10 +69,13 @@ PUTCHAR_PROTOTYPE
 {
   /* Place your implementation of fputc here */
   /* e.g. write a character to the USART4 and Loop until the end of transmission */
-  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1,0xFFFF);
+//  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1,0xFFFF);
 
   return ch;
 }
+
+extern void vUARTCommandConsoleStart( uint16_t usStackSize, UBaseType_t uxPriority );
+extern void vRegisterSampleCLICommands( void );
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -83,10 +87,14 @@ StaticTask_t appTaskTCB; 																			// app创建task任务控制块指针定义
 // 创建线程任务的task
 void AppTasksCreate(void* pvParameters)
 {
+	vUARTCommandConsoleStart( 512, 1 );
 //	taskENTER_CRITICAL();
 	TaskCreate();
-	TaskCreateStatic();
+//	TaskCreateStatic();
 //	taskEXIT_CRITICAL();
+	
+////	vRegisterSampleCLICommands();
+//	vUARTCommandConsoleStart( 512, 1 );
 	
 	vTaskDelete(appTaskCreate_handle);  // 创建完工作任务后，删除该启动任务
 }
@@ -108,6 +116,7 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackTyp
 //	*ppxTimerTaskStackBuffer = TimerTaskStack;
 //	*pulTimerTaskStackSize = configMINIMAL_STACK_SIZE;
 //}
+uint8_t uart2_recv_buff[RECV_BUFF_MAX];
 /* USER CODE END 0 */
 
 /**
@@ -138,10 +147,17 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 //	unsigned int testCount = 0;
+	__HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);  // 开启串口的空闲中断
+	HAL_UART_Receive_DMA(&huart2, (uint8_t*)uart2_recv_buff, sizeof(uart2_recv_buff));  // 设置DMA传输，将串口2的数据接收到指定的缓存数组，每次255个字节
+	
+	vRegisterSampleCLICommands();
+//	vUARTCommandConsoleStart( 512, 1 );
+
 	appTaskCreate_handle = xTaskCreateStatic((TaskFunction_t)AppTasksCreate,					// 任务入口函数
 																					(char*)					"AppTasksCreate",					// 任务名称
 																					(uint32_t)			configMINIMAL_STACK_SIZE,	// 任务线程栈大小

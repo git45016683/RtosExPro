@@ -67,87 +67,74 @@
     1 tab == 4 spaces!
 */
 
-#ifndef FREERTOS_CONFIG_H
-#define FREERTOS_CONFIG_H
+#ifndef SERIAL_COMMS_H
+#define SERIAL_COMMS_H
 
-/*-----------------------------------------------------------
- * Application specific definitions.
- *
- * These definitions should be adjusted for your particular hardware and
- * application requirements.
- *
- * THESE PARAMETERS ARE DESCRIBED WITHIN THE 'CONFIGURATION' SECTION OF THE
- * FreeRTOS API DOCUMENTATION AVAILABLE ON THE FreeRTOS.org WEB SITE. 
- *
- * See http://www.freertos.org/a00110.html.
- *----------------------------------------------------------*/
+typedef void * xComPortHandle;
 
-#define configUSE_PREEMPTION		1
-#define configUSE_IDLE_HOOK			0
-#define configUSE_TICK_HOOK			0
-#define configCPU_CLOCK_HZ			( ( unsigned long ) 72000000 )	
-#define configTICK_RATE_HZ			( ( TickType_t ) 1000 )
-#define configMAX_PRIORITIES		( 5 )
-#define configMINIMAL_STACK_SIZE	( ( unsigned short ) 128 )
-#define configTOTAL_HEAP_SIZE		( ( size_t ) ( 8 * 1024 ) )
-#define configMAX_TASK_NAME_LEN		( 16 )
-#define configUSE_TRACE_FACILITY	1
-#define configUSE_16_BIT_TICKS		0
-#define configIDLE_SHOULD_YIELD		1
-#define configUSE_STATS_FORMATTING_FUNCTIONS 1
+typedef enum
+{ 
+	serCOM1, 
+	serCOM2, 
+	serCOM3, 
+	serCOM4, 
+	serCOM5, 
+	serCOM6, 
+	serCOM7, 
+	serCOM8 
+} eCOMPort;
 
-/* Co-routine definitions. */
-#define configUSE_CO_ROUTINES 		0
-#define configMAX_CO_ROUTINE_PRIORITIES ( 2 )
+typedef enum 
+{ 
+	serNO_PARITY, 
+	serODD_PARITY, 
+	serEVEN_PARITY, 
+	serMARK_PARITY, 
+	serSPACE_PARITY 
+} eParity;
 
-/* Set the following definitions to 1 to include the API function, or zero
-to exclude the API function. */
+typedef enum 
+{ 
+	serSTOP_1, 
+	serSTOP_2 
+} eStopBits;
 
-#define INCLUDE_vTaskPrioritySet		1
-#define INCLUDE_uxTaskPriorityGet		1
-#define INCLUDE_vTaskDelete				1
-#define INCLUDE_vTaskCleanUpResources	0
-#define INCLUDE_vTaskSuspend			1
-#define INCLUDE_vTaskDelayUntil			1
-#define INCLUDE_vTaskDelay				1
+typedef enum 
+{ 
+	serBITS_5, 
+	serBITS_6, 
+	serBITS_7, 
+	serBITS_8 
+} eDataBits;
 
-/* This is the raw value as per the Cortex-M3 NVIC.  Values can be 255
-(lowest) to 0 (1?) (highest). */
-#define configKERNEL_INTERRUPT_PRIORITY 		255
-/* !!!! configMAX_SYSCALL_INTERRUPT_PRIORITY must not be set to zero !!!!
-See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY 	191 /* equivalent to 0xb0, or priority 11. */
+typedef enum 
+{ 
+	ser50,		
+	ser75,		
+	ser110,		
+	ser134,		
+	ser150,    
+	ser200,
+	ser300,		
+	ser600,		
+	ser1200,	
+	ser1800,	
+	ser2400,   
+	ser4800,
+	ser9600,		
+	ser19200,	
+	ser38400,	
+	ser57600,	
+	ser115200
+} eBaud;
 
+xComPortHandle xSerialPortInitMinimal( unsigned long ulWantedBaud, unsigned portBASE_TYPE uxQueueLength );
+xComPortHandle xSerialPortInit( eCOMPort ePort, eBaud eWantedBaud, eParity eWantedParity, eDataBits eWantedDataBits, eStopBits eWantedStopBits, unsigned portBASE_TYPE uxBufferLength );
+void vSerialPutString( xComPortHandle pxPort, const signed char * const pcString, unsigned short usStringLength );
+signed portBASE_TYPE xSerialGetChar( xComPortHandle pxPort, signed char *pcRxedChar, TickType_t xBlockTime );
+signed portBASE_TYPE xSerialPutChar( xComPortHandle pxPort, signed char cOutChar, TickType_t xBlockTime );
+portBASE_TYPE xSerialWaitForSemaphore( xComPortHandle xPort );
+void vSerialClose( xComPortHandle xPort );
 
-/* This is the value being used as per the ST library which permits 16
-priority values, 0 to 15.  This must correspond to the
-configKERNEL_INTERRUPT_PRIORITY setting.  Here 15 corresponds to the lowest
-NVIC value of 255. */
-//#define configLIBRARY_KERNEL_INTERRUPT_PRIORITY	15
-#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY	15
-
-
-
-
-/****************↓↓↓将必要的中断服务函数重定向FreeRTOS内的中断服务函数↓↓↓*****************/
-#define xPortPendSVHandler    PendSV_Handler
-#define vPortSVCHandler				SVC_Handler
-/****************↑↑↑将必要的中断服务函数重定向FreeRTOS内的中断服务函数↑↑↑*****************/
-
-// 静态创建线程默认关闭--需要打开
-#define configSUPPORT_STATIC_ALLOCATION 1
-//// 定时器默认关闭--需要打开
-//#define configUSE_TIMERS 1
-//#define configTIMER_TASK_PRIORITY  1
-//#define configTIMER_QUEUE_LENGTH  1
-//#define configTIMER_TASK_STACK_DEPTH  1
-
-//#define INCLUDE_uxTaskGetStackHighWaterMark 1024
-
-// 
-#define configUSE_MUTEXES 1
-
-
-
-#endif /* FREERTOS_CONFIG_H */
+#endif
 

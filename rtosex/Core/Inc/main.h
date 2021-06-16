@@ -40,7 +40,9 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+#define RECV_BUFF_MAX		255
+extern uint8_t uart2_recv_buff[RECV_BUFF_MAX];
+extern void vSerialPutString( void* pxPort, const signed char * const pcString, unsigned short usStringLength );
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
