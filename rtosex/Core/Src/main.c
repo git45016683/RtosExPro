@@ -19,7 +19,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "dma.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -87,14 +86,12 @@ StaticTask_t appTaskTCB; 																			// app创建task任务控制块指针定义
 // 创建线程任务的task
 void AppTasksCreate(void* pvParameters)
 {
-	vUARTCommandConsoleStart( 512, 1 );
 //	taskENTER_CRITICAL();
 	TaskCreate();
-//	TaskCreateStatic();
+	TaskCreateStatic();
+	vRegisterSampleCLICommands();
+	vUARTCommandConsoleStart(1024, 1);
 //	taskEXIT_CRITICAL();
-	
-////	vRegisterSampleCLICommands();
-//	vUARTCommandConsoleStart( 512, 1 );
 	
 	vTaskDelete(appTaskCreate_handle);  // 创建完工作任务后，删除该启动任务
 }
@@ -147,13 +144,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 //	unsigned int testCount = 0;
-	__HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);  // 开启串口的空闲中断
-	HAL_UART_Receive_DMA(&huart2, (uint8_t*)uart2_recv_buff, sizeof(uart2_recv_buff));  // 设置DMA传输，将串口2的数据接收到指定的缓存数组，每次255个字节
 	
 	vRegisterSampleCLICommands();
 //	vUARTCommandConsoleStart( 512, 1 );

@@ -5,8 +5,7 @@ static TaskHandle_t taskHandle = NULL;		// 动态线程句柄
 
 void TaskCreate(void)
 {
-//	printf("\r\nTaskCreate");
-//	vSerialPutString((void*)1, (const signed char*)"\r\nTaskCreate", sizeof("\r\nTaskCreate"));
+	printf("\r\nTaskCreate");
 	BaseType_t ret = xTaskCreate(Task1Thread_entery,							// 任务入口函数
 															"Task1Thread_entery",							// 任务名称
 															configMINIMAL_STACK_SIZE,					// 任务栈大小
@@ -20,15 +19,14 @@ void Task1Thread_entery(void* parameter)
 	static unsigned int task1TestCount = 0;
 	while(1)
 	{
-//		printf("\r\n--task1TestCount: %d", task1TestCount++);
-		vSerialPutString((void*)1, (const signed char*)"help\r\n", sizeof("help\r\n"));
+		printf("\r\n--task1TestCount: %d", task1TestCount++);
 		vTaskDelay(configTICK_RATE_HZ*8);
 	}
 }
 
 
-extern uint8_t data_len;
-extern uint8_t uart2_recv_buff[255];
+//extern uint8_t data_len;
+//extern uint8_t uart2_recv_buff[255];
 
 //// 静态创建线程
 static TaskHandle_t taskStaticHandle = NULL;										// 静态线程句柄
@@ -36,8 +34,7 @@ static StackType_t taskStaticStack[configMINIMAL_STACK_SIZE];		// 静态线程�
 static StaticTask_t taskStaticTCB;															// 静态线程控制块
 void TaskCreateStatic(void)
 {
-//	printf("\r\nTaskCreateStatic");
-	vSerialPutString((void*)1, (const signed char*)"\r\nTaskCreateStatic", sizeof("\r\nTaskCreateStatic"));
+	printf("\r\nTaskCreateStatic");
 	taskStaticHandle = xTaskCreateStatic(Task2Thread_entery,			// 任务入口函数
 																			"Task2Thread_entery",			// 任务名称
 																			configMINIMAL_STACK_SIZE,	// 任务栈大小
@@ -70,7 +67,7 @@ void Task2Thread_entery(void* parameter)
 
 //void cliTaskCreate(void)
 //{
-//	printf("\r\nTaskCreate");
+//	printf("\r\nCLI TaskCreate");
 //	BaseType_t ret = xTaskCreate(prvUARTCommandConsoleTask,							// 任务入口函数
 //															"cliTaskThread_entery",									// 任务名称
 //															configMINIMAL_STACK_SIZE*4,							// 任务栈大小
@@ -79,5 +76,12 @@ void Task2Thread_entery(void* parameter)
 //															&cliTaskHandle);												// 任务句柄
 //}
 
+//void cliTaskThread_entery(void* parameter)
+//{
+//	while(1)
+//	{
+//		prvUARTCommandConsoleTask(NULL);
+//	}
+//}
 
 

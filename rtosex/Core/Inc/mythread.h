@@ -8,4 +8,7 @@ void Task1Thread_entery(void* parameter);
 void TaskCreateStatic(void);
 void Task2Thread_entery(void* parameter);
 
+void cliTaskCreate(void);
+void cliTaskThread_entery(void* parameter);
+
 #endif  // __MYTHREAD_H__

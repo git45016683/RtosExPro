@@ -91,7 +91,7 @@
 
 /* Dimentions a buffer to be used by the UART driver, if the UART driver uses a
 buffer at all. */
-#define cmdQUEUE_LENGTH			25
+#define cmdQUEUE_LENGTH			256
 
 /* DEL acts as a backspace. */
 #define cmdASCII_DEL		( 0x7F )
@@ -111,7 +111,7 @@ available. */
  */
 static void prvUARTCommandConsoleTask( void *pvParameters );
 void vUARTCommandConsoleStart( uint16_t usStackSize, UBaseType_t uxPriority );
-extern void vRegisterSampleCLICommands( void );
+
 //extern void prvUARTCommandConsoleTask( void *pvParameters );
 //extern void vRegisterSampleCLICommands( void );
 
@@ -151,6 +151,7 @@ static void prvUARTCommandConsoleTask( void *pvParameters )
 {
 //xTxMutex = xSemaphoreCreateMutex();
 //configASSERT( xTxMutex );
+
 signed char cRxedChar;
 uint8_t ucInputIndex = 0;
 char *pcOutputString;
@@ -178,7 +179,7 @@ xComPortHandle xPort;
 		INCLUDE_vTaskSuspend is not set to 1 - in which case portMAX_DELAY will
 		be a genuine block time rather than an infinite block time. */
 		while( xSerialGetChar( xPort, &cRxedChar, portMAX_DELAY ) != pdPASS );
-
+		printf("\r\n serial get char: %c", cRxedChar);
 		/* Ensure exclusive access to the UART Tx. */
 		if( xSemaphoreTake( xTxMutex, cmdMAX_MUTEX_WAIT ) == pdPASS )
 		{
