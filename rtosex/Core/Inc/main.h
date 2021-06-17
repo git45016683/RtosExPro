@@ -35,12 +35,14 @@ extern "C" {
 #include <stdio.h>
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
 #include "mythread.h"
+#include "mymsgqueue.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-#define V_UART_DMA_RECEIVE	1
+#define V_UART_DMA_RECEIVE	0
 #define RECV_BUFF_MAX		255
 extern uint8_t uart2_recv_buff[RECV_BUFF_MAX];
 /* USER CODE END ET */

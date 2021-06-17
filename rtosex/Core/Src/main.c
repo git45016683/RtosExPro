@@ -69,7 +69,7 @@ PUTCHAR_PROTOTYPE
 {
   /* Place your implementation of fputc here */
   /* e.g. write a character to the USART4 and Loop until the end of transmission */
-//  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1,0xFFFF);
+  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1,0xFFFF);
 
   return ch;
 }
@@ -88,9 +88,18 @@ StaticTask_t appTaskTCB; 																			// app创建task任务控制块指针定义
 void AppTasksCreate(void* pvParameters)
 {
 //	taskENTER_CRITICAL();
-	TaskCreate();
+	
+	// 线程创建示例
+//	TaskCreate();
 //	TaskCreateStatic();
+	
+	// CLI示例
 	vUARTCommandConsoleStart(1024, 1);
+	
+	// 消息队列示例
+	TaskCreateForQueue();
+	TaskCreateStaticForQueue();
+	
 //	taskEXIT_CRITICAL();
 	
 	vTaskDelete(appTaskCreate_handle);  // 创建完工作任务后，删除该启动任务
