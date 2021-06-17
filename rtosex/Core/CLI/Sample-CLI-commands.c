@@ -85,6 +85,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mythread.h"
+#include "mymsgqueue.h"
 
 /* FreeRTOS+CLI includes. */
 #include "FreeRTOS_CLI.h"
@@ -129,6 +130,12 @@ static BaseType_t prvParameterEchoCommand( char *pcWriteBuffer, size_t xWriteBuf
  * Implements the prvTaskCreateStatic command.
  */
 static BaseType_t prvTaskCreateStatic( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString );
+
+/*
+ * Implements the prvTaskCreateStatic command.
+ */
+static BaseType_t prvSendMyQueueFromISR( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString );
+
 
 /*
  * Implements the "query heap" command.
@@ -183,9 +190,17 @@ a time. */
 static const CLI_Command_Definition_t xCreateMyTask2 =
 {
 	"TaskCreateStatic",
-	"\r\nTaskCreateStatic :\r\n Will create a task via static style\r\n",
+	"\r\nTaskCreateStatic:\r\n Will create a task via static style\r\n",
 	prvTaskCreateStatic, /* The function to run. */
 	0 /* No parameters are expected. */
+};
+
+static const CLI_Command_Definition_t xSendQueueISR =
+{
+	"sendMyQueueFromISR",
+	"\r\nsendMyQueueFromISR:\r\n Will call differrent sendQueueFromISR(5/6/7/8) via your choose:\r\n",
+	prvSendMyQueueFromISR, /* The function to run. */
+	1 /* One parameters are expected. */
 };
 /******************************************* ¡ü¡ü¡ü ×Ô¶¨ÒåÃüÁî ¡ü¡ü¡ü *******************************************/
 
@@ -233,6 +248,7 @@ void vRegisterSampleCLICommands( void )
 	FreeRTOS_CLIRegisterCommand( &xThreeParameterEcho );
 	FreeRTOS_CLIRegisterCommand( &xParameterEcho );
 	FreeRTOS_CLIRegisterCommand( &xCreateMyTask2 );
+	FreeRTOS_CLIRegisterCommand( &xSendQueueISR );
 
 	#if( configGENERATE_RUN_TIME_STATS == 1 )
 	{
@@ -500,6 +516,76 @@ static BaseType_t prvTaskCreateStatic( char *pcWriteBuffer, size_t xWriteBufferL
 	TaskCreateStatic();
 	
 	return pdFALSE;
+}
+/*-----------------------------------------------------------*/
+
+static BaseType_t prvSendMyQueueFromISR( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+	( void ) pcCommandString;
+	( void ) xWriteBufferLen;
+	
+	const char *pcParameter;
+	BaseType_t xParameterStringLength, xReturn;
+	static UBaseType_t uxParameterNumber = 0;
+	configASSERT( pcWriteBuffer );
+	
+	sprintf( pcWriteBuffer, "your choose %s\r\n", pcCommandString);
+	
+	if( uxParameterNumber == 0 )
+	{
+		/* The first time the function is called after the command has been
+		entered just a header string is returned. */
+		sprintf( pcWriteBuffer, "The parameters were:\r\n" );
+
+		/* Next time the function is called the first parameter will be echoed
+		back. */
+		uxParameterNumber = 1U;
+
+		/* There is more data to be returned as no parameters have been echoed
+		back yet. */
+		xReturn = pdPASS;
+	}
+	else
+	{
+		/* Obtain the parameter string. */
+		pcParameter = FreeRTOS_CLIGetParameter
+						(
+							pcCommandString,		/* The command string itself. */
+							uxParameterNumber,		/* Return the next parameter. */
+							&xParameterStringLength	/* Store the parameter string length. */
+						);
+
+		if( pcParameter != NULL )
+		{
+			char temp[2] = "";
+			/* Return the parameter string. */
+			memset( pcWriteBuffer, 0x00, xWriteBufferLen );
+			sprintf( pcWriteBuffer, "%d: ", ( int ) uxParameterNumber );
+			strncat( pcWriteBuffer, ( char * ) pcParameter, ( size_t ) xParameterStringLength );
+			strncat( temp, ( char * ) pcParameter, ( size_t ) xParameterStringLength );
+			strncat( pcWriteBuffer, "\r\n", strlen( "\r\n" ) );
+			
+			sendMyQueueFromISR(atoi(temp));
+
+			/* There might be more parameters to return after this one. */
+			xReturn = pdTRUE;
+			uxParameterNumber++;
+		}
+		else
+		{
+			/* No more parameters were found.  Make sure the write buffer does
+			not contain a valid string. */
+			pcWriteBuffer[ 0 ] = 0x00;
+
+			/* No more data to return. */
+			xReturn = pdFALSE;
+
+			/* Start over the next time this command is executed. */
+			uxParameterNumber = 0;
+		}
+	}
+	
+	return xReturn;
 }
 /*-----------------------------------------------------------*/
 

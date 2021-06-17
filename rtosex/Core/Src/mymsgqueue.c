@@ -3,12 +3,12 @@
 static xQueueHandle queueHandle = NULL;  // 消息队列句柄
 // 1-xQueueSend--插入到队末
 // 2-xQueueSendToBack--插入到队末
-// 3-xQueueOverWrite--直接写入队末
+// 3-xQueueOverwrite--直接写入队末
 // 3-xQueueSendToFront--写入队首
-#define SEND_TYPE		2  // 1-xQueueSend  2-xQueueSendToBack  3-xQueueOverWrite 4-xQueueSendToFront
+#define SEND_TYPE		4  // 1-xQueueSend  2-xQueueSendToBack  3-xQueueOverwrite 4-xQueueSendToFront
 // 1-xQueueReceive--取出消息，并从队列中删除该消息
 // 2-xQueuePeek--取出消息，不删除队列中的该消息
-#define RECV_TYPE		2  // 1-xQueueReceive  2-xQueuePeek  3-xQueueOverWrite
+#define RECV_TYPE		1  // 1-xQueueReceive  2-xQueuePeek  3-xQueueOverWrite
 
 // 动态创建线程
 static TaskHandle_t taskHandle = NULL;		// 动态线程句柄
@@ -23,6 +23,8 @@ void TaskCreateForQueue(void)
 															&taskHandle);											// 任务句柄
 }
 
+static unsigned int task1TestCount = 0;
+static char str[64] = "";
 void QueueTask1_entery(void* parameter)
 {
 	static unsigned int task1TestCount = 0;
@@ -41,17 +43,17 @@ void QueueTask1_entery(void* parameter)
 		{
 			sprintf(str, "xQueueSend -> %d", task1TestCount++);
 			#if SEND_TYPE == 1
-			ret = xQueueSend(queueHandle, str, 1000);
+			ret = xQueueSend(queueHandle, str, 100);  // 写入到队末，队列满后，超时不会插入
 			#elif SEND_TYPE == 2
-			ret = xQueueSendToBack(queueHandle, str, 1000);
+			ret = xQueueSendToBack(queueHandle, str, 100);  // 写入到队末，队列满后，超时不会插入
 			#elif SEND_TYPE == 3
-			ret = xQueueOverWrite(queueHandle, str, 1000);
+			ret = xQueueOverwrite(queueHandle, str);
 			#elif SEND_TYPE == 4
-			ret = xQueueSendToFront(queueHandle, str, 1000);
+			ret = xQueueSendToFront(queueHandle, str, 100);  // 写入到队首，队列满后，超时不会插入
 			#endif
-			printf("\r\n--%s", str);
+//			printf("\r\n--%s", str);
 		}
-		vTaskDelay(configTICK_RATE_HZ*8);
+		vTaskDelay(configTICK_RATE_HZ/10);
 	}
 }
 
@@ -95,15 +97,20 @@ void QueueTask2_entery(void* parameter)
 				#if RECV_TYPE == 1
 				printf("\r\n %d.recvQueue msg: %s, and reset receive buff", task2TestCount++, recvStr);
 				memset(recvStr, '\0', sizeof(recvStr));
+				vTaskDelay(configTICK_RATE_HZ);
+				#elif RECV_TYPE == 2 && (SEND_TYPE == 3 || SEND_TYPE == 4 || SEND_TYPE == 2)
+				printf("\r\n %d.recvQueue msg: %s, and reset receive buff", task2TestCount++, recvStr);
+				memset(recvStr, '\0', sizeof(recvStr));
+				vTaskDelay(configTICK_RATE_HZ*3);
 				#elif RECV_TYPE == 2
 				printf("\r\n %d.recvQueue msg: %s, and reset receive buff", task2TestCount++, recvStr);
 				memset(recvStr, '\0', sizeof(recvStr));
 				vTaskDelay(configTICK_RATE_HZ);
-				if (task2TestCount%3 == 0)
-				{
-					ret = xQueueReceive(queueHandle, recvStr, 1000);  // 取出并删除消息
-					printf("\r\n %d.recvQueue msg: %s, and reset receive buff, delete msg", task2TestCount++, recvStr);
-				}
+//				if (task2TestCount%3 == 0)
+//				{
+//					ret = xQueueReceive(queueHandle, recvStr, 1000);  // 取出并删除消息
+//					printf("\r\n %d.recvQueue msg: %s, and reset receive buff, delete msg", task2TestCount++, recvStr);
+//				}
 				#endif
 			} else 
 			{
@@ -128,8 +135,24 @@ void deleteMyQueue(void)
 		vQueueDelete(queueHandle);
 	}
 }
-void sendMyQueue(void)
+void sendMyQueueFromISR(uint8_t send_type)
 {
+	BaseType_t pxHigherPriorityTaskWoken = 1;
+	BaseType_t ret = NULL;
+	taskENTER_CRITICAL();
+	
+	sprintf(str, "%d.xQueueSendISR -> %d", send_type, task1TestCount++);
+	if (send_type == 5)
+		ret = xQueueSendFromISR(queueHandle, str, &pxHigherPriorityTaskWoken);  // 写入到队末，队列满后，超时不会插入
+	if (send_type == 6)
+		ret = xQueueSendToBackFromISR(queueHandle, str, &pxHigherPriorityTaskWoken);  // 写入到队末，队列满后，超时不会插入
+	if (send_type == 7)
+		ret = xQueueOverwriteFromISR(queueHandle, str, NULL);
+	if (send_type == 8)
+		ret = xQueueSendToFrontFromISR(queueHandle, str, NULL);  // 写入到队首，队列满后，超时不会插入
+	
+	printf("\r\n--%s", str);
+	taskEXIT_CRITICAL();
 }
 
 

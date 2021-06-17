@@ -12,6 +12,6 @@ void QueueTask2_entery(void* parameter);
 // 消息队列相关的创建
 void createMyQueue(void);
 void deleteMyQueue(void);
-void sendMyQueue(void);
+void sendMyQueueFromISR(uint8_t send_type);
 
 #endif  // __MYMSGQUEUE_H__
