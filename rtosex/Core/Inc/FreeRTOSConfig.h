@@ -146,10 +146,33 @@ NVIC value of 255. */
 
 // 
 #define configUSE_MUTEXES 1
-// 程序运行状态命令开启
-//#define configGENERATE_RUN_TIME_STATS 1
+// 程序运行时长命令开启
+#define configGENERATE_RUN_TIME_STATS 1
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS (xTaskGetTickCount)
+#define portGET_RUN_TIME_COUNTER_VALUE (xTaskGetTickCount)
 
 
 
 #endif /* FREERTOS_CONFIG_H */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
