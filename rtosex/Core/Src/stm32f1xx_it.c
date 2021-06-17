@@ -218,7 +218,9 @@ void DMA1_Channel6_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-//	UART2_IDLE_IRQHandler(&huart2);  // 新增的中断响应，用于空闲中断
+	#if V_UART_DMA_RECEIVE  // 空闲中断+DMA接收版本
+	UART2_IDLE_IRQHandler(&huart2);  // 新增的中断响应，用于空闲中断
+	#endif
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */

@@ -80,6 +80,7 @@
 //#include "stm32f10x_lib.h"
 #include "main.h"
 extern UART_HandleTypeDef huart2;
+extern DMA_HandleTypeDef hdma_usart2_rx;
 uint8_t aRxBuffer;
 
 /* Demo application includes. */
@@ -119,7 +120,12 @@ xComPortHandle xSerialPortInitMinimal( unsigned long ulWantedBaud, unsigned port
 	hardware. */
 	if( ( xRxedChars != serINVALID_QUEUE ) && ( xCharsForTx != serINVALID_QUEUE ) )
 	{
+		#if V_UART_DMA_RECEIVE  // 空闲中断+DMA接收版本
+		__HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);  // 开启串口空闲中断
+		HAL_UART_Receive_DMA(&huart2, uart2_recv_buff, RECV_BUFF_MAX);  // 重启开始DMA传输 每次255字节数据
+		#else  // 中断接收版本
 		HAL_UART_Receive_IT(&huart2, &aRxBuffer, 1);  // 开启中断接收
+		#endif
 	}
 	else
 	{
@@ -166,7 +172,6 @@ signed char *pxNext;
 
 	/* Send each character in the string, one at a time. */
 	pxNext = ( signed char * ) pcString;
-	unsigned short k = 0;
 	while( *pxNext )
 	{
 		xSerialPutChar( pxPort, *pxNext, serNO_BLOCK );
@@ -185,6 +190,7 @@ signed portBASE_TYPE xReturn;
 		uint8_t cChar;
 		if (xQueueReceive(xCharsForTx, &cChar, 0) == pdTRUE)
 		{
+			// 两种发送方式均可
 			while(HAL_UART_Transmit_IT(&huart2, &cChar, 1) != HAL_OK);
 //			if ((HAL_UART_GetState(&huart2) & HAL_UART_STATE_BUSY_TX) != HAL_UART_STATE_BUSY_TX)
 //			{
@@ -207,38 +213,37 @@ void vSerialClose( xComPortHandle xPort )
 }
 /*-----------------------------------------------------------*/
 
+#if V_UART_DMA_RECEIVE  // 空闲中断+DMA接收版本
+uint8_t data_len = 0;
+void UART2_IDLECallback(UART_HandleTypeDef* huart)
+{
+	HAL_UART_DMAStop(&huart2);  // 停止本次DMA传输
+	
+	data_len = RECV_BUFF_MAX - __HAL_DMA_GET_COUNTER(&hdma_usart2_rx);  // 计算接收到的数据长度
+	
+	uart2_recv_buff[data_len] = '\0';
+	
+	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+	for (uint8_t i = 0; i < data_len; i++)
+	{
+		xQueueSendFromISR(xRxedChars, &uart2_recv_buff[i], &xHigherPriorityTaskWoken);
+	}
+	
+	HAL_UART_Receive_DMA(&huart2, (uint8_t*)uart2_recv_buff, RECV_BUFF_MAX);  // 重启开始DMA传输 每次255字节数据
+	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+}
+#else  // 中断接收版本
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (huart->Instance == USART2)
 	{
 		portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 		xQueueSendFromISR(xRxedChars, &aRxBuffer, &xHigherPriorityTaskWoken);
-//		printf("\r\nrecv:%c", aRxBuffer);
 		HAL_UART_Receive_IT(&huart2, &aRxBuffer, 1);
 		portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
 	}
 }
-
-////uint8_t buff_index = 0;
-//uint8_t data_len = 0;
-//void UART2_IDLECallback(UART_HandleTypeDef* huart)
-//{
-//	HAL_UART_DMAStop(&huart2);  // 停止本次DMA传输
-//	
-//	data_len = RECV_BUFF_MAX - __HAL_DMA_GET_COUNTER(&hdma_usart2_rx);  // 计算接收到的数据长度
-//	
-//	uart2_recv_buff[data_len] = '\0';
-//	
-//	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
-//	for (uint8_t i = 0; i < data_len - 1; i++)
-//	{
-//		xQueueSendFromISR(xRxedChars, &uart2_recv_buff[i], &xHigherPriorityTaskWoken);
-//	}
-//	
-//	HAL_UART_Receive_DMA(&huart2, (uint8_t*)uart2_recv_buff, RECV_BUFF_MAX);  // 重启开始DMA传输 每次255字节数据
-//	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-//}
-
+#endif
 //void vUARTInterruptHandler( void )
 //{
 //portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;

@@ -90,7 +90,6 @@ void AppTasksCreate(void* pvParameters)
 //	taskENTER_CRITICAL();
 	TaskCreate();
 	TaskCreateStatic();
-	vRegisterSampleCLICommands();
 	vUARTCommandConsoleStart(1024, 1);
 //	taskEXIT_CRITICAL();
 	
@@ -152,7 +151,6 @@ int main(void)
 //	unsigned int testCount = 0;
 	
 	vRegisterSampleCLICommands();
-//	vUARTCommandConsoleStart( 512, 1 );
 
 	appTaskCreate_handle = xTaskCreateStatic((TaskFunction_t)AppTasksCreate,					// 任务入口函数
 																					(char*)					"AppTasksCreate",					// 任务名称

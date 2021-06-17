@@ -196,9 +196,9 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
-
-// 串口2空闲中断响应函数
-//extern void UART2_IDLECallback(UART_HandleTypeDef* huart);
+#if V_UART_DMA_RECEIVE  // 空闲中断+DMA接收版本
+// 串口2空闲中断接收处理函数
+extern void UART2_IDLECallback(UART_HandleTypeDef* huart);
 //{
 //	HAL_UART_DMAStop(&huart2);  // 停止本次DMA传输
 //	
@@ -214,18 +214,19 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 //	HAL_UART_Receive_DMA(&huart2, (uint8_t*)uart2_recv_buff, sizeof(uart2_recv_buff));  // 重启开始DMA传输 每次255字节数据
 //}
 
-//// 串口2空闲中断
-//void UART2_IDLE_IRQHandler(UART_HandleTypeDef* huart)
-//{
-//	if (USART2 == huart2.Instance)
-//	{
-//		if (RESET != __HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE))  // 空闲中断触发
-//		{
-//			__HAL_UART_CLEAR_IDLEFLAG(&huart2);  // 清空闲中断
-//			UART2_IDLECallback(huart);
-//		}
-//	}
-//}
+// 串口2空闲中断
+void UART2_IDLE_IRQHandler(UART_HandleTypeDef* huart)
+{
+	if (USART2 == huart2.Instance)
+	{
+		if (RESET != __HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE))  // 空闲中断触发
+		{
+			__HAL_UART_CLEAR_IDLEFLAG(&huart2);  // 清空闲中断
+			UART2_IDLECallback(huart);
+		}
+	}
+}
+#endif
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

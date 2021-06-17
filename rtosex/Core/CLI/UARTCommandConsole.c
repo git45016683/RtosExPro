@@ -113,7 +113,6 @@ static void prvUARTCommandConsoleTask( void *pvParameters );
 void vUARTCommandConsoleStart( uint16_t usStackSize, UBaseType_t uxPriority );
 
 //extern void prvUARTCommandConsoleTask( void *pvParameters );
-//extern void vRegisterSampleCLICommands( void );
 
 /*-----------------------------------------------------------*/
 
@@ -172,7 +171,6 @@ xComPortHandle xPort;
 	/* Send the welcome message. */
 	vSerialPutString( xPort, ( signed char * ) pcWelcomeMessage, ( unsigned short ) strlen( pcWelcomeMessage ) );
 
-//	vRegisterSampleCLICommands();
 	for( ;; )
 	{
 		/* Wait for the next character.  The while loop is used in case
