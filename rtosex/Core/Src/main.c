@@ -89,7 +89,7 @@ void AppTasksCreate(void* pvParameters)
 {
 //	taskENTER_CRITICAL();
 	TaskCreate();
-	TaskCreateStatic();
+//	TaskCreateStatic();
 	vUARTCommandConsoleStart(1024, 1);
 //	taskEXIT_CRITICAL();
 	

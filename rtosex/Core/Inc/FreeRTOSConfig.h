@@ -146,6 +146,8 @@ NVIC value of 255. */
 
 // 
 #define configUSE_MUTEXES 1
+// 程序运行状态命令开启
+//#define configGENERATE_RUN_TIME_STATS 1
 
 
 

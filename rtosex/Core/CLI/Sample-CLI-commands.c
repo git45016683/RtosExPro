@@ -84,6 +84,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "mythread.h"
 
 /* FreeRTOS+CLI includes. */
 #include "FreeRTOS_CLI.h"
@@ -122,6 +123,12 @@ static BaseType_t prvThreeParameterEchoCommand( char *pcWriteBuffer, size_t xWri
  * Implements the echo-parameters command.
  */
 static BaseType_t prvParameterEchoCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString );
+
+
+/*
+ * Implements the prvTaskCreateStatic command.
+ */
+static BaseType_t prvTaskCreateStatic( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString );
 
 /*
  * Implements the "query heap" command.
@@ -169,6 +176,19 @@ static const CLI_Command_Definition_t xParameterEcho =
 	-1 /* The user can enter any number of commands. */
 };
 
+/******************************************* ↓↓↓ 自定义命令 ↓↓↓ *******************************************/
+/* Structure that defines the "nTaskCreateStatic" command line command.  This
+takes a variable number of parameters that the command simply echos back one at
+a time. */
+static const CLI_Command_Definition_t xCreateMyTask2 =
+{
+	"TaskCreateStatic",
+	"\r\nTaskCreateStatic :\r\n Will create a task via static style\r\n",
+	prvTaskCreateStatic, /* The function to run. */
+	0 /* No parameters are expected. */
+};
+/******************************************* ↑↑↑ 自定义命令 ↑↑↑ *******************************************/
+
 #if( configGENERATE_RUN_TIME_STATS == 1 )
 	/* Structure that defines the "run-time-stats" command line command.   This
 	generates a table that shows how much run time each task has */
@@ -212,6 +232,7 @@ void vRegisterSampleCLICommands( void )
 	FreeRTOS_CLIRegisterCommand( &xTaskStats );	
 	FreeRTOS_CLIRegisterCommand( &xThreeParameterEcho );
 	FreeRTOS_CLIRegisterCommand( &xParameterEcho );
+	FreeRTOS_CLIRegisterCommand( &xCreateMyTask2 );
 
 	#if( configGENERATE_RUN_TIME_STATS == 1 )
 	{
@@ -465,6 +486,20 @@ static UBaseType_t uxParameterNumber = 0;
 	}
 
 	return xReturn;
+}
+/*-----------------------------------------------------------*/
+
+static BaseType_t prvTaskCreateStatic( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
+{
+	( void ) pcCommandString;
+	( void ) xWriteBufferLen;
+	configASSERT( pcWriteBuffer );
+	
+	sprintf( pcWriteBuffer, "I'm a custom command line for create task via static style\r\n" );
+	
+	TaskCreateStatic();
+	
+	return pdFALSE;
 }
 /*-----------------------------------------------------------*/
 

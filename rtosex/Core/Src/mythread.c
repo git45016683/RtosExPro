@@ -50,7 +50,7 @@ void Task2Thread_entery(void* parameter)
 	static unsigned int task2TestCount = 0;
 	while(1)
 	{
-//		printf("\r\n[task2TestCount: %d - uart2 get: ", task2TestCount++);
+		printf("\r\n[task2TestCount: %d - uart2 get: ", task2TestCount++);
 		vTaskDelay(configTICK_RATE_HZ);
 		
 //		for(uint8_t i = 0; i < data_len; i++)
