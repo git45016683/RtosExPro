@@ -101,8 +101,12 @@ void AppTasksCreate(void* pvParameters)
 //	TaskCreateStaticForQueue();
 	
 	// 信号量示例
-	TaskCreateForSemaphore();
-	TaskCreateStaticForSemaphore();
+//	TaskCreateForSemaphore();
+//	TaskCreateStaticForSemaphore();
+	
+	// 临界区
+	TaskCreateForCritical();
+	TaskCreateStaticForCritical();
 	
 //	taskEXIT_CRITICAL();
 	

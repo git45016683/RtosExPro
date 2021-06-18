@@ -40,6 +40,7 @@ extern "C" {
 #include "mythread.h"
 #include "mymsgqueue.h"
 #include "mysemaphore.h"
+#include "mycriticalsuspend.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
