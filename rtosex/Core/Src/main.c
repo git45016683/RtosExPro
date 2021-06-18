@@ -105,8 +105,12 @@ void AppTasksCreate(void* pvParameters)
 //	TaskCreateStaticForSemaphore();
 	
 	// 临界区
-	TaskCreateForCritical();
-	TaskCreateStaticForCritical();
+//	TaskCreateForCritical();
+//	TaskCreateStaticForCritical();
+	
+	// 守护任务
+	TaskCreateForDaemon();
+	TaskCreateStaticForDaemon();
 	
 //	taskEXIT_CRITICAL();
 	
@@ -168,6 +172,7 @@ int main(void)
 //	unsigned int testCount = 0;
 	
 	createMutex();
+	createDaemonQueue();
 	vRegisterSampleCLICommands();
 
 	appTaskCreate_handle = xTaskCreateStatic((TaskFunction_t)AppTasksCreate,					// 任务入口函数

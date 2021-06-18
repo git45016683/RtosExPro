@@ -41,6 +41,7 @@ extern "C" {
 #include "mymsgqueue.h"
 #include "mysemaphore.h"
 #include "mycriticalsuspend.h"
+#include "mydaemon.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

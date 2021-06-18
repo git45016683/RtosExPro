@@ -441,6 +441,11 @@
               <FileType>1</FileType>
               <FilePath>..\Core\Src\mycriticalsuspend.c</FilePath>
             </File>
+            <File>
+              <FileName>mydaemon.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\mydaemon.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
