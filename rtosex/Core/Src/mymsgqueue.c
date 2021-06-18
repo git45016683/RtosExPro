@@ -1,4 +1,4 @@
-#include "mymsgqueue.h"
+#include "mysemaphore.h"
 
 static xQueueHandle queueHandle = NULL;  // 消息队列句柄
 // 1-xQueueSend--插入到队末

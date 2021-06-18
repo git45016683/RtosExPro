@@ -431,6 +431,11 @@
               <FileType>1</FileType>
               <FilePath>..\Core\Src\mymsgqueue.c</FilePath>
             </File>
+            <File>
+              <FileName>mysemaphore.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\mysemaphore.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

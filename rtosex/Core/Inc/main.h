@@ -36,8 +36,10 @@ extern "C" {
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "semphr.h"
 #include "mythread.h"
 #include "mymsgqueue.h"
+#include "mysemaphore.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

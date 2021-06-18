@@ -151,6 +151,9 @@ NVIC value of 255. */
 #define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS (xTaskGetTickCount)
 #define portGET_RUN_TIME_COUNTER_VALUE (xTaskGetTickCount)
 
+// 启用计数信号量
+#define configUSE_COUNTING_SEMAPHORES 1
+
 
 
 #endif /* FREERTOS_CONFIG_H */

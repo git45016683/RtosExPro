@@ -97,8 +97,12 @@ void AppTasksCreate(void* pvParameters)
 	vUARTCommandConsoleStart(1024, 1);
 	
 	// 消息队列示例
-	TaskCreateForQueue();
-	TaskCreateStaticForQueue();
+//	TaskCreateForQueue();
+//	TaskCreateStaticForQueue();
+	
+	// 信号量示例
+	TaskCreateForSemaphore();
+	TaskCreateStaticForSemaphore();
 	
 //	taskEXIT_CRITICAL();
 	
