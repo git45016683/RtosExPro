@@ -11,4 +11,7 @@ void TaskCreateStaticForCritical(void);
 void CriticalTask2_entery(void* parameter);
 
 
+// 互斥量(信号量)相关的创建
+void createMutex(void);
+
 #endif  // __MYCRITICALSUSPEND_H__

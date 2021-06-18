@@ -167,6 +167,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 //	unsigned int testCount = 0;
 	
+	createMutex();
 	vRegisterSampleCLICommands();
 
 	appTaskCreate_handle = xTaskCreateStatic((TaskFunction_t)AppTasksCreate,					// 任务入口函数
