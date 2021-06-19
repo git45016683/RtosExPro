@@ -109,8 +109,12 @@ void AppTasksCreate(void* pvParameters)
 //	TaskCreateStaticForCritical();
 	
 	// 守护任务
-	TaskCreateForDaemon();
-	TaskCreateStaticForDaemon();
+//	TaskCreateForDaemon();
+//	TaskCreateStaticForDaemon();
+
+	// 事件
+	TaskCreateForEvent();
+	TaskCreateStaticForEvent();
 	
 //	taskEXIT_CRITICAL();
 	

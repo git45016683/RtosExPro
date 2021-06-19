@@ -37,11 +37,14 @@ extern "C" {
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
+#include "event_groups.h"
 #include "mythread.h"
 #include "mymsgqueue.h"
 #include "mysemaphore.h"
 #include "mycriticalsuspend.h"
 #include "mydaemon.h"
+#include "myevent.h"
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

@@ -446,6 +446,16 @@
               <FileType>1</FileType>
               <FilePath>..\Core\Src\mydaemon.c</FilePath>
             </File>
+            <File>
+              <FileName>myevent.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\myevent.c</FilePath>
+            </File>
+            <File>
+              <FileName>mynotify.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\mynotify.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
