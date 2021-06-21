@@ -44,6 +44,7 @@ extern "C" {
 #include "mycriticalsuspend.h"
 #include "mydaemon.h"
 #include "myevent.h"
+#include "mynotify.h"
 
 /* USER CODE END Includes */
 
