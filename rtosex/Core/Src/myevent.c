@@ -1,8 +1,8 @@
 #include "myevent.h"
 
 static EventGroupHandle_t eventHandle;  // 事件句柄
-#define KEY_1  0
-#define KEY_6  5
+#define KEY_1  (1<<0)
+#define KEY_6  (1<<5)
 
 // 动态创建线程
 static TaskHandle_t taskHandle = NULL;		// 动态线程句柄
@@ -42,9 +42,10 @@ void EventTask1_entery(void* parameter)
 		{
 			vTaskDelay(configTICK_RATE_HZ*3);
 			xEventGroupSetBits(eventHandle, KEY_1);
-			printf("\r\n--%x, set Event Bits ret: %ld", *(uint32_t*)eventHandle, ret);
+			printf("\r\n--%x, set Event Bits (%08x) ret: %ld", *(uint32_t*)eventHandle, KEY_1, ret);
 			vTaskDelay(configTICK_RATE_HZ*11);
 			xEventGroupSetBits(eventHandle, KEY_6);
+			printf("\r\n--%x, set Event Bits (%08x) ret: %ld", *(uint32_t*)eventHandle, KEY_6, ret);
 			vTaskDelay(configTICK_RATE_HZ*3);
 		}
 	}
@@ -64,12 +65,10 @@ void EventTask3_entery(void* parameter)
 		} else 
 		{
 			ret_event =xEventGroupWaitBits(eventHandle, KEY_1 | KEY_6, pdFALSE, pdTRUE, 1000*10);
-			if (ret_event & (KEY_1|KEY_6))  // 收到1、6
-			{printf("\r\ntask3TestCount: %d -> event: %d & %d", task3TestCount++, KEY_1, KEY_6);
-			} else if (ret_event & KEY_6)  // 收到6
-			{printf("\r\ntask3TestCount: %d -> event: %d", task3TestCount++, KEY_6);
+			if (ret_event & KEY_6)  // 收到6
+			{printf("\r\ntask3TestCount: %d -> event: %08x", task3TestCount++, KEY_6);
 			} else if (ret_event & KEY_1)  // 收到1
-			{printf("\r\ntask3TestCount: %d -> event: %d", task3TestCount++, KEY_1);
+			{printf("\r\ntask3TestCount: %d -> event: %08x", task3TestCount++, KEY_1);
 			} else printf("\r\ntask3TestCount: %d -> event ret: %ld", task3TestCount++, ret);
 		}
 	}
@@ -106,13 +105,13 @@ void EventTask2_entery(void* parameter)
 			vTaskDelay(configTICK_RATE_HZ);
 		} else 
 		{
-			ret_event =xEventGroupWaitBits(eventHandle, KEY_1 | KEY_6, pdTRUE, pdTRUE, 1000*10);
+			ret_event =xEventGroupWaitBits(eventHandle, KEY_1 | KEY_6, pdTRUE, pdTRUE, portMAX_DELAY);
 			if (ret_event & (KEY_1|KEY_6))  // 收到1、6
-			{printf("\r\ntask2TestCount: %d -> event: %d & %d", task2TestCount++, KEY_1, KEY_6);
+			{printf("\r\ntask2TestCount: %d -> event: %08x & %08x", task2TestCount++, KEY_1, KEY_6);
 			} else if (ret_event & KEY_6)  // 收到6
-			{printf("\r\ntask2TestCount: %d -> event: %d", task2TestCount++, KEY_6);
+			{printf("\r\ntask2TestCount: %d -> event: %08x", task2TestCount++, KEY_6);
 			} else if (ret_event & KEY_1)  // 收到1
-			{printf("\r\ntask2TestCount: %d -> event: %d", task2TestCount++, KEY_1);
+			{printf("\r\ntask2TestCount: %d -> event: %08x", task2TestCount++, KEY_1);
 			} else printf("\r\ntask2TestCount: %d -> event ret: %ld", task2TestCount++, ret);
 		}
 	}
