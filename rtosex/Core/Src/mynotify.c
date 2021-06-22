@@ -4,13 +4,11 @@ static TaskHandle_t task2StaticHandle = NULL;										// 静态线程句柄
 static StackType_t task2StaticStack[configMINIMAL_STACK_SIZE];	// 静态线程栈大小
 static StaticTask_t task2StaticTCB;															// 静态线程控制块
 static TaskHandle_t task4StaticHandle = NULL;										// 静态线程句柄
-static StackType_t task4StaticStack[configMINIMAL_STACK_SIZE];		// 静态线程栈大小
+static StackType_t task4StaticStack[configMINIMAL_STACK_SIZE];	// 静态线程栈大小
 static StaticTask_t task4StaticTCB;															// 静态线程控制块
 static TaskHandle_t task6StaticHandle = NULL;										// 静态线程句柄
 static StackType_t task6StaticStack[configMINIMAL_STACK_SIZE];	// 静态线程栈大小
 static StaticTask_t task6StaticTCB;															// 静态线程控制块
-
-#define NOTIFY_VAL 21
 
 
 // 1-NoNotifyValueType[只发送通知,没通知值-信号量类型]  -> xTaskNotifyGive/xTaskNotifyTake
@@ -26,7 +24,7 @@ static TaskHandle_t task3Handle = NULL;		// 动态线程句柄
 static TaskHandle_t task5Handle = NULL;		// 动态线程句柄
 void TaskCreateForNotify(void)
 {
-	printf("\r\nTaskCreateForSemaphore");
+	printf("\r\nTaskCreateForNotify");
 	ret = xTaskCreate(NotifyTask1_entery,													// 任务入口函数
 															"NotifyTask1_entery",							// 任务名称
 															configMINIMAL_STACK_SIZE,					// 任务栈大小
@@ -57,18 +55,18 @@ void NotifyTask1_entery(void* parameter)
 	uint32_t ret_num;
 	while(1)
 	{
+		vTaskDelay(configTICK_RATE_HZ*8);
 		ret = xTaskNotifyGive(task2StaticHandle);
 		printf("\r\n--NotifyTask1: %d, ret: %ld", task1TestCount++, ret);
-		vTaskDelay(configTICK_RATE_HZ*8);
 	}
 }
 void NotifyTask3_entery(void* parameter)
 {
 	while(1)
 	{
+		vTaskDelay(configTICK_RATE_HZ*6);
 		ret = xTaskNotify(task4StaticHandle, 1, eIncrement);
 		printf("\r\n--NotifyTask3: %d, ret: %ld", task1TestCount++, ret);
-		vTaskDelay(configTICK_RATE_HZ*6);
 	}
 }
 void NotifyTask5_entery(void* parameter)
@@ -76,16 +74,16 @@ void NotifyTask5_entery(void* parameter)
 	uint32_t ret_num;
 	while(1)
 	{
+		vTaskDelay(configTICK_RATE_HZ*4);
 		ret = xTaskNotifyAndQuery(task6StaticHandle, 5, eIncrement, &ret_num);
 		printf("\r\n--NotifyTask5: %d, ret: %ld, ret_num:%d", task1TestCount++, ret, ret_num);
-		vTaskDelay(configTICK_RATE_HZ*4);
 	}
 }
 
 ////// 静态创建线程
 void TaskCreateStaticForNotify(void)
 {
-	printf("\r\nTaskCreateStaticForSemaphore");
+	printf("\r\nTaskCreateStaticForNotify");
 	task2StaticHandle = xTaskCreateStatic(NotifyTask2_entery,			// 任务入口函数
 																			"NotifyTask2_entery",			// 任务名称
 																			configMINIMAL_STACK_SIZE,	// 任务栈大小
@@ -128,7 +126,7 @@ void NotifyTask4_entery(void* parameter)
 	while(1)
 	{
 		ret = xTaskNotifyWait(pdFALSE, pdTRUE, &comeIMG, configTICK_RATE_HZ*8);
-		printf("\r\nNotifyTask4: %d, ret ", task2TestCount++, (uint32_t)ret);
+		printf("\r\nNotifyTask4: %d, ret %ld", task2TestCount++, ret);
 		vTaskDelay(configTICK_RATE_HZ);
 	}
 }
@@ -139,7 +137,7 @@ void NotifyTask6_entery(void* parameter)
 	while(1)
 	{
 		ret = xTaskNotifyWait(pdFALSE, pdTRUE, &comeIMG, configTICK_RATE_HZ*5);
-		printf("\r\nNotifyTask6: %d, ret: %d", task2TestCount++, (uint32_t)ret);
+		printf("\r\nNotifyTask6: %d, ret: %ld", task2TestCount++, ret);
 		vTaskDelay(configTICK_RATE_HZ);
 	}
 }
