@@ -38,6 +38,7 @@ extern "C" {
 #include "queue.h"
 #include "semphr.h"
 #include "event_groups.h"
+#include "timers.h"
 #include "mythread.h"
 #include "mymsgqueue.h"
 #include "mysemaphore.h"
@@ -45,6 +46,8 @@ extern "C" {
 #include "mydaemon.h"
 #include "myevent.h"
 #include "mynotify.h"
+#include "mytimer.h"
+
 
 /* USER CODE END Includes */
 

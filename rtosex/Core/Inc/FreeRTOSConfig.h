@@ -154,6 +154,11 @@ NVIC value of 255. */
 // 启用计数信号量
 #define configUSE_COUNTING_SEMAPHORES 1
 
+// 启用定时器
+#define configUSE_TIMERS 						 1
+#define configTIMER_TASK_PRIORITY 	 (configMAX_PRIORITIES-1)
+#define configTIMER_QUEUE_LENGTH 		 2  // 创建的定时器数量要比消息队列长度要小
+#define configTIMER_TASK_STACK_DEPTH 1
 
 
 #endif /* FREERTOS_CONFIG_H */

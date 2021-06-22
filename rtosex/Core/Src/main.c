@@ -87,7 +87,7 @@ StaticTask_t appTaskTCB; 																			// app创建task任务控制块指针定义
 // 创建线程任务的task
 void AppTasksCreate(void* pvParameters)
 {
-//	taskENTER_CRITICAL();
+	taskENTER_CRITICAL();
 	
 	// 线程创建示例
 //	TaskCreate();
@@ -118,10 +118,14 @@ void AppTasksCreate(void* pvParameters)
 //	TaskCreateStaticForEvent();
 
 	// 任务通知
-	TaskCreateForNotify();
-	TaskCreateStaticForNotify();
+//	TaskCreateForNotify();
+//	TaskCreateStaticForNotify();
+
+	// 定时器
+	CreateForLifeTimer();
+	CreateStaticForTestTimer();
 	
-//	taskEXIT_CRITICAL();
+	taskEXIT_CRITICAL();
 	
 	vTaskDelete(appTaskCreate_handle);  // 创建完工作任务后，删除该启动任务
 }
@@ -134,15 +138,15 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackTyp
 	*ppxIdleTaskStackBuffer = IdleTaskStack;
 	*pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
 }
-//// 定时器任务堆、栈、任务控制块的分配
-//static StackType_t TimerTaskStack[configMINIMAL_STACK_SIZE];  // 空闲任务栈 大小为256
-//static StaticTask_t TimerTaskTCB;  														// 空闲任务控制块指针定义
-//void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize)
-//{
-//	*ppxTimerTaskTCBBuffer = &TimerTaskTCB;
-//	*ppxTimerTaskStackBuffer = TimerTaskStack;
-//	*pulTimerTaskStackSize = configMINIMAL_STACK_SIZE;
-//}
+// 定时器任务堆、栈、任务控制块的分配
+static StackType_t TimerTaskStack[configMINIMAL_STACK_SIZE*2];  // 空闲任务栈 大小为256
+static StaticTask_t TimerTaskTCB;  														// 空闲任务控制块指针定义
+void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize)
+{
+	*ppxTimerTaskTCBBuffer = &TimerTaskTCB;
+	*ppxTimerTaskStackBuffer = TimerTaskStack;
+	*pulTimerTaskStackSize = configMINIMAL_STACK_SIZE*2;
+}
 uint8_t uart2_recv_buff[RECV_BUFF_MAX];
 /* USER CODE END 0 */
 
