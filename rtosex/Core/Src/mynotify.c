@@ -71,11 +71,16 @@ void NotifyTask3_entery(void* parameter)
 }
 void NotifyTask5_entery(void* parameter)
 {
+	static uint8_t notify6 = 0;
 	uint32_t ret_num;
 	while(1)
 	{
-		vTaskDelay(configTICK_RATE_HZ*4);
-		ret = xTaskNotifyAndQuery(task6StaticHandle, 5, eIncrement, &ret_num);
+		vTaskDelay(configTICK_RATE_HZ*2);
+		if (notify6 == 1)
+		{ret = xTaskNotifyAndQuery(task6StaticHandle, 6, eSetValueWithoutOverwrite, &ret_num);notify6=0;
+		} else 
+		{ret = xTaskNotifyAndQuery(task6StaticHandle, 5, eSetValueWithoutOverwrite, &ret_num);notify6=1;}
+//		ret = xTaskNotifyAndQuery(task6StaticHandle, 6, eIncrement, &ret_num);  // 使用覆写方式的通知值更新方式验证
 		printf("\r\n--NotifyTask5: %d, ret: %ld, ret_num:%d", task1TestCount++, ret, ret_num);
 	}
 }
@@ -125,8 +130,8 @@ void NotifyTask4_entery(void* parameter)
 	uint32_t comeIMG = 0;
 	while(1)
 	{
-		ret = xTaskNotifyWait(pdFALSE, pdTRUE, &comeIMG, configTICK_RATE_HZ*8);
-		printf("\r\nNotifyTask4: %d, ret %ld", task2TestCount++, ret);
+		ret = xTaskNotifyWait(pdFALSE, pdFALSE, &comeIMG, configTICK_RATE_HZ*8);
+		printf("\r\nNotifyTask4: %d, ret %ld, notifyValue=%d", task2TestCount++, ret, comeIMG);
 		vTaskDelay(configTICK_RATE_HZ);
 	}
 }
@@ -136,9 +141,9 @@ void NotifyTask6_entery(void* parameter)
 	uint32_t comeIMG = 0;
 	while(1)
 	{
-		ret = xTaskNotifyWait(pdFALSE, pdTRUE, &comeIMG, configTICK_RATE_HZ*5);
-		printf("\r\nNotifyTask6: %d, ret: %ld", task2TestCount++, ret);
-		vTaskDelay(configTICK_RATE_HZ);
+		ret = xTaskNotifyWait(pdFALSE, pdFALSE, &comeIMG, configTICK_RATE_HZ*5);
+		printf("\r\nNotifyTask6: %d, ret: %ld, notifyValue=%d", task2TestCount++, ret, comeIMG);
+		vTaskDelay(configTICK_RATE_HZ*5);
 	}
 }
 

@@ -113,6 +113,7 @@ void AppTasksCreate(void* pvParameters)
 //	TaskCreateStaticForDaemon();
 
 	// ÊÂ¼þ
+//	createEvent();
 //	TaskCreateForEvent();
 //	TaskCreateStaticForEvent();
 
